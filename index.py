@@ -56,16 +56,19 @@ def show_index():
 def show_mainpage():
     # if not session.get('images'):
     access_token = '213665890.c05fe5e.5f748d07a787466a9044883e1176a18a'
+    access_token2 = '2117079315.c05fe5e.7d6fbe8447654b1a87de22cfacd58998'
 
     resp = requests.request('GET','https://api.instagram.com/v1/users/self/media/recent/?access_token=' + access_token)
+    respOther = requests.request('GET', 'https://api.instagram.com/v1/users/self/media/recent/?access_token=' + access_token2)
     # print(json.loads(resp.content))
     dict = json.loads(resp.content)
-    if len(dict["data"]) == 0:
-        print("we got nothing")
+    dictOther = json.loads(respOther.content)
+    print(dictOther)
 
-    data = dict["data"]
+    data = dict["data"] + dictOther["data"]
     session["images"] = []
     session["caption"] = []
+    print(len(data))
     for i in xrange(0,len(data)):
         dictionary = data[i]["images"]['standard_resolution']
         dictionary["tags"] = data[i]["tags"]
