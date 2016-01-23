@@ -70,6 +70,7 @@ def show_mainpage():
         dictionary = data[i]["images"]['standard_resolution']
         dictionary["tags"] = data[i]["tags"]
         dictionary["username"] = data[i]["user"]["username"]
+        dictionary["caption"] = data[i]["caption"]["text"]
         session["images"].append(dictionary)
         session["caption"].append(data[i]["caption"]["text"].lower())
     
