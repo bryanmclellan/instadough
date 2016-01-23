@@ -39,7 +39,7 @@ def show_users():
     # cur = g.db.execute('select username, nessie_id from users order by id desc')
     # users = [dict(username=row[0], nessie_id=row[1]) for row in cur.fetchall()]
     # return render_template('show_users.html', users=users)
-    return render_template('startbootstrap-landing-page-1.0.5/index.html')
+    return render_template('index.html')
 
 @app.route('/add', methods=['POST'])
 def add_user():
@@ -52,4 +52,4 @@ def add_user():
     return redirect(url_for('show_users'))
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0', port=8080)
