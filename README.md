@@ -1,4 +1,4 @@
-# datinstadough
+# instadough
 
 Penn Apps 2016 hack
 
