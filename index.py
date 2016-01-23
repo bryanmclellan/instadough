@@ -5,6 +5,7 @@ from flask import Flask, request, session, g, redirect, url_for, \
 from contextlib import closing
 import requests
 from logging.handlers import RotatingFileHandler
+import logging
 
 
 # configuration
@@ -67,17 +68,17 @@ def show_mainpage():
 def instagram_oauth():
     app.logger.info('start of oath')
     code = request.args.get('code', '')
-    oathparams = {
+    oauthparams = {
             'client_id': IG_CLIENT_ID,
             'client_secret':IG_CLIENT_SECRET,
-            'grant_type':authorization_code,
+            'grant_type':'authorization_code',
             'redirect_uri':IG_REDIRECT_URI,
             'code':code 
     }
     app.logger.info('sending post request')
     r = requests.post("https://api.instagram.com/oauth/access_token", data = oauthparams)
     response = r.json()
-    if response['access_token']:
+    if 'access_token' in response:
         'got valid response'
         session['ig_token'] = response['access_token']
         return redirect(url_for('show_mainpage'), code=302)
