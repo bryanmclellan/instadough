@@ -67,7 +67,10 @@ def show_mainpage():
     session["images"] = []
     session["caption"] = []
     for i in xrange(0,len(data)):
-        session["images"].append(data[i]["images"]['standard_resolution'])
+        dictionary = data[i]["images"]['standard_resolution']
+        dictionary["tags"] = data[i]["tags"]
+        dictionary["username"] = data[i]["user"]["username"]
+        session["images"].append(dictionary)
         session["caption"].append(data[i]["caption"]["text"].lower())
     
     # images = [{'url':'https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e35/12424344_180566928966669_438670868_n.jpg', 'width':678, 'height': 678},
