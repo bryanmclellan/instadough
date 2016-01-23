@@ -101,6 +101,7 @@ def search():
 
 @app.route('/oauthsuccess.html')
 def instagram_oauth():
+    return "Hello there."
     app.logger.info('start of oath')
     code = request.args.get('code', '')
     oauthparams = {
@@ -123,5 +124,5 @@ if __name__ == "__main__":
     handler = RotatingFileHandler('debug.log', maxBytes=10000, backupCount=1)
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8080, debug=True)
 
