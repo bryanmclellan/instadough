@@ -44,6 +44,10 @@ def show_users():
     else:
         return render_template('main.html')
 
+@app.route('/main.html')
+def show_mainpage():
+    return render_template('main.html')
+
 @app.route('/add', methods=['POST'])
 def add_user():
     # if not session.get('logged_in'):
