@@ -13,7 +13,7 @@ DATABASE = '/tmp/instadough.db'
 DEBUG = True
 IG_CLIENT_ID = 'c05fe5e5ea30400fbf66f088560b259e'
 IG_CLIENT_SECRET = 'fc3481826bba47c682b4c627cd60722b'
-IG_REDIRECT_URI = 'http://instadough.co/oauthsuccess.html'
+IG_REDIRECT_URI = 'http://instadough.co/main.html'
 # SECRET_KEY = 'development key'
 # USERNAME = 'admin'
 # PASSWORD = 'default'
@@ -90,7 +90,7 @@ def search():
             session["search_results"].append(session["images"][i])
             print(session["search_results"])
 
-    return render_template('main.html')
+    return render_template('main.html', images=session["search_results"])
 
 
 # @app.route('/add', methods=['POST'])
