@@ -10,6 +10,16 @@
   column-gap:           10px;  
 }
 
+.modal-container {
+  max-width:300px;
+  height:auto;
+}
+
+.description-text {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 @media (max-width: 1200px) {
   .results {
   -moz-column-count:    4;

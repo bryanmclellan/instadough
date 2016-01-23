@@ -56,7 +56,37 @@
 
 <section class="results">
 {% for image in images %}
-    <img src="{{image.url}}" class="result-container img-thumbnail">
+    <a href="#myModal{{loop.index}}" data-toggle="modal">
+        <img src="{{image.url}}" class="result-container img-thumbnail">
+    </a>
+ 
+<!-- Modal HTML -->
+<div id="myModal{{loop.index}}" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Buy Photo</h4>
+            </div>
+            <div class="modal-body">
+                 <img src="{{image.url}}" class="modal-container img-thumbnail">
+                <p class="description-text">@{{image.username}}</p>
+                <p class="description-text"><small>{{image.caption}}</small></p>
+                <p class="description-text">
+                {% for tag in image.tags %}
+                    #{{tag}}
+                {% endfor %}
+                </p>
+                <p class="description-text"></p>
+            </div>
+            <div class="modal-footer">
+                <p class="description-text">$0.99</p>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Buy</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endfor %}
 </section>
     
