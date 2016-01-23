@@ -189,7 +189,7 @@
         var loginButton = loginButtons[i];
         console.log(loginButton);
         loginButton.addEventListener("click",function(event){
-            window.open('https://api.instagram.com/oauth/authorize/?client_id=' + CLIENT_ID + '&redirect_uri=' + REDIRECT_URI + '&response_type=token');
+            window.open('https://api.instagram.com/oauth/authorize/?client_id=' + CLIENT_ID + '&redirect_uri=' + REDIRECT_URI + '&response_type=code');
         });
     }
     </script>
