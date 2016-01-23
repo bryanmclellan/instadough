@@ -36,9 +36,10 @@ def teardown_request(exception):
 
 @app.route('/')
 def show_users():
-    cur = g.db.execute('select username, nessie_id from users order by id desc')
-    users = [dict(username=row[0], nessie_id=row[1]) for row in cur.fetchall()]
-    return render_template('show_users.html', users=users)
+    # cur = g.db.execute('select username, nessie_id from users order by id desc')
+    # users = [dict(username=row[0], nessie_id=row[1]) for row in cur.fetchall()]
+    # return render_template('show_users.html', users=users)
+    return render_template('startbootstrap-landing-page-1.0.5/index.html')
 
 @app.route('/add', methods=['POST'])
 def add_user():
@@ -49,10 +50,6 @@ def add_user():
     g.db.commit()
     flash('New user was successfully posted')
     return redirect(url_for('show_users'))
-
-@app.route("/")
-def hello():
-    return "Dat Insta Doh -.-"
 
 if __name__ == "__main__":
     app.run()
