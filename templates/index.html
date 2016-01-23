@@ -46,7 +46,7 @@
                         <hr class="intro-divider">
                         <ul class="list-inline intro-social-buttons">
                             <li>
-                              <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg"><i class="fa fa-instagram fa-fw"></i><span class="network-name"> Connect with Instagram</span></a>
+                              <span class="btn btn-default btn-lg login"><i class="fa fa-instagram fa-fw"></i><span class="network-name"> Connect with Instagram</span></span>
                             </li>
                             <!--<li>-->
                                 <!--<a href="https://github.com/IronSummitMedia/startbootstrap" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>-->
@@ -174,5 +174,27 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="static/js/bootstrap.min.js"></script>
+
+    <script>
+    "use strict";
+
+    var CLIENT_ID = 'c05fe5e5ea30400fbf66f088560b259e';
+    var REDIRECT_URI = 'http://instadough.co/oauthsuccess';
+
+    console.log("js file is up");
+    var loginButtons = document.getElementsByClassName('login');
+    console.log(loginButtons);
+
+    for(var i = 0; i<loginButtons.length; i++){
+        var loginButton = loginButtons[i];
+        console.log(loginButton);
+        loginButton.addEventListener("click",function(event){
+            window.open('https://api.instagram.com/oauth/authorize/?client_id=' + CLIENT_ID + '&redirect_uri=' + REDIRECT_URI + '&response_type=token');
+        });
+    }
+    </script>
     
+{% endblock %}
+{% block scripts %}
+<!-- <script src="static/insta_login.js" type="text/javascript"></script> -->
 {% endblock %}
