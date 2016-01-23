@@ -6,7 +6,7 @@ from contextlib import closing
 import json
 from logging.handlers import RotatingFileHandler
 import logging
-from requests_toolbelt import MultipartEncoder
+#from requests_toolbelt import MultipartEncoder
 import requests
 
 # configuration
@@ -81,16 +81,11 @@ def show_mainpage():
     resp = requests.request('GET','https://api.instagram.com/v1/users/self/media/recent/?access_token=' + access_token)
     respOther = requests.request('GET', 'https://api.instagram.com/v1/users/self/media/recent/?access_token=' + access_token2)
     # print(json.loads(resp.content))
-    dic = json.loads(resp.content)
+    dict = json.loads(resp.content)
     dictOther = json.loads(respOther.content)
     print(dictOther)
 
-    data = dic["data"] + dictOther["data"]
-    mayberesp = get_access_token_for_code()
-    if 'access_token' in mayberesp:
-        mytoken = mayberesp['access_token']
-    else:
-        mytoken = access_token
+    data = dict["data"] + dictOther["data"]
     session["images"] = []
     session["caption"] = []
     print(len(data))
