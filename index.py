@@ -3,7 +3,7 @@ import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
 from contextlib import closing
-import requests
+import requests, json
 from logging.handlers import RotatingFileHandler
 import logging
 
@@ -20,6 +20,8 @@ IG_REDIRECT_URI = 'http://instadough.co/oauthsuccess'
 from flask import Flask
 app = Flask(__name__)
 app.config.from_object(__name__)
+
+app.secret_key = 'c05fe5e5ea30400fbf66f088560b259e'
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -52,7 +54,35 @@ def show_index():
 
 @app.route('/main.html')
 def show_mainpage():
+    # if not session.get('images'):
+    access_token = '213665890.c05fe5e.5f748d07a787466a9044883e1176a18a'
+
+    resp = requests.request('GET','https://api.instagram.com/v1/users/self/media/recent/?access_token=' + access_token)
+    # print(json.loads(resp.content))
+    dict = json.loads(resp.content)
+    if len(dict["data"]) == 0:
+        print("we got nothing")
+
+    data = dict["data"]
+    session["images"] = []
+    session["caption"] = []
+    for i in xrange(0,len(data)):
+        session["images"].append(data[i]["images"]['standard_resolution'])
+        session["caption"].append(data[i]["caption"]["text"].lower())
     return render_template('main.html')
+
+
+@app.route('/search.html', methods=['POST'])
+def search():
+    text = request.form["search"].lower()
+    session["search_results"] = []
+    for i in xrange(0,len(session["images"])):
+        if text in session["caption"][i]:
+            session["search_results"].append(session["images"][i])
+            print(session["search_results"])
+
+    return render_template('main.html')
+
 
 # @app.route('/add', methods=['POST'])
 # def add_user():
@@ -93,3 +123,4 @@ if __name__ == "__main__":
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
     app.run(host='0.0.0.0', port=8080)
+
