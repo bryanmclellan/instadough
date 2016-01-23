@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block body %}
+  <form action="{{ url_for('add_user') }}" method=post class=add-entry>
+    <dl>
+      <dt>Username:
+      <dd><input type=text size=30 name=username>
+      <dt>Password:
+      <dd><textarea name=password rows=5 cols=40></textarea>
+      <dt>Nessie_id:
+      <dd><textarea name=nessie_id rows=5 cols=40></textarea>
+      <dd><input type=submit value=Share>
+    </dl>
+  </form>
+  <ul class=entries>
+  {% for user in users %}
+    <li><h2>{{ user.username }}</h2>{{ user.nessie_id|safe }}
+  {% else %}
+    <li><em>Unbelievable.  No users here so far</em>
+  {% endfor %}
+  </ul>
+  {% endblock %}
