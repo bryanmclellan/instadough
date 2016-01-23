@@ -101,7 +101,7 @@ def search():
 
 @app.route('/oauthsuccess.html')
 def instagram_oauth():
-    return "Hello there."
+#    return "Hello there."
     app.logger.info('start of oath')
     code = request.args.get('code', '')
     oauthparams = {
@@ -114,7 +114,7 @@ def instagram_oauth():
     app.logger.info('sending post request')
     r = requests.post("https://api.instagram.com/oauth/access_token", data = oauthparams)
     response = r.json()
-    app.logger.info(response.text)
+    app.logger.info(r.text)
     return redirect(url_for('show_mainpage'), code=302)
     # access_token = request.args.get('access_token', '')
     # session['ig_token'] = True
