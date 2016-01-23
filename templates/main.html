@@ -34,7 +34,7 @@
 {% endblock %}
 {% block body %}
 
-    <div class="container">
+<div class="container">
     <div class="row">
         <div class="col-md-6">
             <h2>Custom search field</h2>
@@ -53,5 +53,11 @@
         </div>
     </div>
 </div>
+
+<section class="results">
+{% for image in images %}
+    <img src="{{image.url}}" class="result-container img-thumbnail">
+{% endfor %}
+</section>
     
 {% endblock %}

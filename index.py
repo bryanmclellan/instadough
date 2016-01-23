@@ -69,7 +69,12 @@ def show_mainpage():
     for i in xrange(0,len(data)):
         session["images"].append(data[i]["images"]['standard_resolution'])
         session["caption"].append(data[i]["caption"]["text"].lower())
-    return render_template('main.html')
+    
+    # images = [{'url':'https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e35/12424344_180566928966669_438670868_n.jpg', 'width':678, 'height': 678},
+            # {'url': 'https://scontent.cdninstagram.com/hphotos-xtf1/t51.2885-15/e35/12545483_1197925680258714_777727123_n.jpg', 'width':640, 'height': 640},
+            # {'url': 'https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e35/12547117_1152951288063483_1691935294_n.jpg', 'width':640, 'height': 640}]
+    
+    return render_template('main.html', images=session['images'])
 
 
 @app.route('/search.html', methods=['POST'])
