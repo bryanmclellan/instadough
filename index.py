@@ -115,11 +115,11 @@ def instagram_oauth():
     r = requests.post("https://api.instagram.com/oauth/access_token", data = oauthparams)
     response = r.json()
     app.logger.info(r.text)
-    if 'access_token' in response:
-        session['ig_token'] = response['access_token']
-        return redirect(url_for('show_mainpage'), code=302)
-    else:
-        return redirect(url_for('show_index'), code=302)
+#    if 'access_token' in response:
+#        session['ig_token'] = response['access_token']
+    return redirect(url_for('show_mainpage'), code=302)
+#    else:
+#        return redirect(url_for('show_index'), code=302)
     # access_token = request.args.get('access_token', '')
     # session['ig_token'] = True
     # return redirect(url_for('show_mainpage'), code=302)
