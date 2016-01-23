@@ -8,9 +8,9 @@ from contextlib import closing
 # configuration
 DATABASE = '/tmp/instadough.db'
 DEBUG = True
-SECRET_KEY = 'development key'
-USERNAME = 'admin'
-PASSWORD = 'default'
+# SECRET_KEY = 'development key'
+# USERNAME = 'admin'
+# PASSWORD = 'default'
 from flask import Flask
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -39,7 +39,10 @@ def show_users():
     # cur = g.db.execute('select username, nessie_id from users order by id desc')
     # users = [dict(username=row[0], nessie_id=row[1]) for row in cur.fetchall()]
     # return render_template('show_users.html', users=users)
-    return render_template('index.html')
+    if not session.get('logged_in'):
+        return render_template('index.html')
+    else:
+        return render_template('main.html')
 
 @app.route('/add', methods=['POST'])
 def add_user():
