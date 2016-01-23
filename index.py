@@ -13,7 +13,7 @@ DATABASE = '/tmp/instadough.db'
 DEBUG = True
 IG_CLIENT_ID = 'c05fe5e5ea30400fbf66f088560b259e'
 IG_CLIENT_SECRET = 'fc3481826bba47c682b4c627cd60722b'
-IG_REDIRECT_URI = 'http://instadough.co/oauthsuccess'
+IG_REDIRECT_URI = 'http://instadough.co/oauthsuccess.html'
 # SECRET_KEY = 'development key'
 # USERNAME = 'admin'
 # PASSWORD = 'default'
@@ -108,6 +108,7 @@ def instagram_oauth():
     app.logger.info('sending post request')
     r = requests.post("https://api.instagram.com/oauth/access_token", data = oauthparams)
     response = r.json()
+    app.logger.info(response.text)
     if 'access_token' in response:
         'got valid response'
         session['ig_token'] = response['access_token']
