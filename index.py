@@ -4,6 +4,8 @@ from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
 from contextlib import closing
 import requests
+from logging.handlers import RotatingFileHandler
+import logging
 
 
 # configuration
@@ -62,22 +64,22 @@ def show_mainpage():
     # flash('New user was successfully posted')
     # return redirect(url_for('show_users'))
 
-@app.route('/oauthsuccess')
+@app.route('/oauthsuccess.html')
 def instagram_oauth():
-    print 'start of oath'
+    app.logger.info('start of oath')
     code = request.args.get('code', '')
-    oathparams = {
+    oauthparams = {
             'client_id': IG_CLIENT_ID,
             'client_secret':IG_CLIENT_SECRET,
-            'grant_type':authorization_code,
+            'grant_type':'authorization_code',
             'redirect_uri':IG_REDIRECT_URI,
             'code':code 
     }
-    print 'sending post request'
+    app.logger.info('sending post request')
     r = requests.post("https://api.instagram.com/oauth/access_token", data = oauthparams)
     response = r.json()
-    if response['access_token']:
-        print 'got valid response'
+    if 'access_token' in response:
+        'got valid response'
         session['ig_token'] = response['access_token']
         return redirect(url_for('show_mainpage'), code=302)
     else:
@@ -87,4 +89,7 @@ def instagram_oauth():
     # return redirect(url_for('show_mainpage'), code=302)
 
 if __name__ == "__main__":
+    handler = RotatingFileHandler('debug.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
     app.run(host='0.0.0.0', port=8080)
