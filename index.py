@@ -58,5 +58,11 @@ def add_user():
     flash('New user was successfully posted')
     return redirect(url_for('show_users'))
 
+@app.route('/oauthsuccess')
+def instagram_oauth():
+    access_token = request.args.get('access_token', '')
+    session['ig_token'] = True
+    return redirect(url_for('show_mainpage'), code=302)
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080)
