@@ -67,7 +67,10 @@ def show_mainpage():
     session["images"] = []
     session["caption"] = []
     for i in xrange(0,len(data)):
-        session["images"].append(data[i]["images"]['standard_resolution'])
+        dictionary = data[i]["images"]['standard_resolution']
+        dictionary["tags"] = data[i]["tags"]
+        dictionary["username"] = data[i]["user"]["username"]
+        session["images"].append(dictionary)
         session["caption"].append(data[i]["caption"]["text"].lower())
     
     # images = [{'url':'https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e35/12424344_180566928966669_438670868_n.jpg', 'width':678, 'height': 678},
@@ -101,6 +104,7 @@ def search():
 
 @app.route('/oauthsuccess.html')
 def instagram_oauth():
+#    return "Hello there."
     app.logger.info('start of oath')
     code = request.args.get('code', '')
     oauthparams = {
@@ -113,8 +117,12 @@ def instagram_oauth():
     app.logger.info('sending post request')
     r = requests.post("https://api.instagram.com/oauth/access_token", data = oauthparams)
     response = r.json()
-    app.logger.info(response.text)
+    app.logger.info(r.text)
+#    if 'access_token' in response:
+#        session['ig_token'] = response['access_token']
     return redirect(url_for('show_mainpage'), code=302)
+#    else:
+#        return redirect(url_for('show_index'), code=302)
     # access_token = request.args.get('access_token', '')
     # session['ig_token'] = True
     # return redirect(url_for('show_mainpage'), code=302)
@@ -123,5 +131,5 @@ if __name__ == "__main__":
     handler = RotatingFileHandler('debug.log', maxBytes=10000, backupCount=1)
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8080, debug=True)
 
