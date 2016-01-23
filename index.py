@@ -44,6 +44,10 @@ def show_users():
     else:
         return render_template('main.html')
 
+@app.route('/main.html')
+def show_mainpage():
+    return render_template('main.html')
+
 @app.route('/add', methods=['POST'])
 def add_user():
     # if not session.get('logged_in'):
@@ -53,6 +57,12 @@ def add_user():
     g.db.commit()
     flash('New user was successfully posted')
     return redirect(url_for('show_users'))
+
+@app.route('/oauthsuccess')
+def instagram_oauth():
+    access_token = request.args.get('access_token', '')
+    session['ig_token'] = True
+    return redirect(url_for('show_mainpage'), code=302)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080)
