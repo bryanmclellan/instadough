@@ -1,4 +1,4 @@
 {% extends "layout.html" %}
 {% block navbar %}
-<?php include '../striipe/stripe.php' ?>
+<?php include dirname(__DIR__).'/stripe/index.php' ?>
 {% endblock %}
