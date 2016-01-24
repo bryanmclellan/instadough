@@ -13,7 +13,7 @@ DATABASE = '/tmp/instadough.db'
 DEBUG = True
 IG_CLIENT_ID = 'c05fe5e5ea30400fbf66f088560b259e'
 IG_CLIENT_SECRET = 'fc3481826bba47c682b4c627cd60722b'
-IG_REDIRECT_URI = 'http://instadough.co/main.html'
+IG_REDIRECT_URI = 'http://instadough.co/create-account.html'
 # SECRET_KEY = 'development key'
 # USERNAME = 'admin'
 # PASSWORD = 'default'
@@ -158,7 +158,27 @@ def login():
     else:
         return render_template('login.html')
 
-@app.route('/add', methods=['POST'])
+def query_db(query, args=(), one=False):
+    cur = g.db.execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
+
+@app.route('/create-account.html')
+def create_account():
+    username = request.args.get('username', '')
+    password = request.args.get('password', '')
+    if (username != '' and password != ''):
+        cur = g.db.execute('select id, username, password from users where username = "{}"'.format(username))
+        for row in cur.fetchall():
+            return render_template('create-account.html', failed = True)
+        g.db.execute('insert into users (username, password) values (?, ?)', [username, password])
+        session['user_id'] = query_db('SELECT last_insert_rowid()')
+        return redirect(url_for('show_mainpage'), code=302)
+    else:
+        return render_template('create-account.html')
+
+
 def add_user():
     # if not session.get('logged_in'):
         # abort(401)
@@ -192,6 +212,10 @@ def instagram_oauth():
     # access_token = request.args.get('access_token', '')
     # session['ig_token'] = True
     # return redirect(url_for('show_mainpage'), code=302)
+    
+@app.route('/stripe.php')
+def stripe():
+    return render_template('stripe.php')
 
 if __name__ == "__main__":
     handler = RotatingFileHandler('debug.log', maxBytes=10000, backupCount=1)
