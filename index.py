@@ -68,12 +68,12 @@ def show_mainpage():
     data = dict["data"] + dictOther["data"]
     session["images"] = []
     session["caption"] = []
-    print(len(data))
     for i in xrange(0,len(data)):
         dictionary = data[i]["images"]['standard_resolution']
         dictionary["tags"] = data[i]["tags"]
         dictionary["username"] = data[i]["user"]["username"]
         dictionary["caption"] = data[i]["caption"]["text"]
+        dictionary["id"] = data[i]["id"]
         session["images"].append(dictionary)
         session["caption"].append(data[i]["caption"]["text"].lower())
     
@@ -91,7 +91,6 @@ def search():
     for i in xrange(0,len(session["images"])):
         if text in session["caption"][i]:
             session["search_results"].append(session["images"][i])
-            print(session["search_results"])
 
     return render_template('main.html', images=session["search_results"])
 
