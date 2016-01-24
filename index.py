@@ -1,7 +1,7 @@
 #all the imports
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, \
-     abort, render_template, flash
+     abort, render_template, flash, send_from_directory
 from contextlib import closing
 import requests, json
 from logging.handlers import RotatingFileHandler
@@ -17,7 +17,7 @@ IG_REDIRECT_URI = 'http://instadough.co/create-account.html'
 # SECRET_KEY = 'development key'
 # USERNAME = 'admin'
 # PASSWORD = 'default'
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config.from_object(__name__)
 
 app.secret_key = 'c05fe5e5ea30400fbf66f088560b259e'
@@ -214,8 +214,8 @@ def instagram_oauth():
     # return redirect(url_for('show_mainpage'), code=302)
     
 @app.route('/stripe.php')
-def stripe():
-    return render_template('stripe.php')
+def static_from_root():
+    return send_from_directory(app.static_folder, 'stripe/index.php')
 
 if __name__ == "__main__":
     handler = RotatingFileHandler('debug.log', maxBytes=10000, backupCount=1)
