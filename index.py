@@ -22,6 +22,7 @@ app.config.from_object(__name__)
 
 app.secret_key = 'c05fe5e5ea30400fbf66f088560b259e'
 
+
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
 
@@ -94,7 +95,41 @@ def search():
 
 @app.route('/profile.html')
 def show_profile():
-    return render_template('profile.html')
+    # for user in query_db('select * from users'):
+    #     print user['username'], 'has the id', user['user_id']
+    name = g.db.execute('select * from users where id = ' + str(session['user_id']))
+    namerv = name.fetchall()
+    for row in namerv:
+        username = row[1]
+
+    cur = g.db.execute('select * from history')
+    rv = cur.fetchall()
+
+    finalFromNames = []
+    fromNames = g.db.execute('select from_id from history')
+    for n in fromNames:
+        print(n)
+        r = g.db.execute('select * from users where id = ' + n[0])
+        for name in r:
+            finalFromNames.append(name[1])
+
+    finalToNames = []
+    toNames = g.db.execute('select to_id from history')
+    for n in toNames:
+        r = g.db.execute('select * from users where id = ' + n[0])
+        for name in r:
+            finalToNames.append(name[1])
+
+
+
+    return render_template('profile.html', fromNames=finalFromNames, toNames=finalToNames, rows=rv, name=username)
+
+
+# def query_db(query, args=(), one=False):
+#     cur = g.db().execute(query, args)
+#     rv = cur.fetchall()
+#     cur.close()
+#     return (rv[0] if rv else None) if one else rv
 
 
 # @app.route('/add', methods=['POST'])
@@ -102,7 +137,7 @@ def show_profile():
     # # if not session.get('logged_in'):
         # # abort(401)
     # g.db.execute('insert into users (username, password, nessie_id) values (?, ?, ?)',
-                 # [request.form['username'], request.form['password'], request.form['nessie_id']])
+    #              [request.form['username'], request.form['password'], request.form['nessie_id']])
     # g.db.commit()
     # flash('New user was successfully posted')
     # return redirect(url_for('show_users'))

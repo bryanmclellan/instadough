@@ -17,7 +17,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="#about">About</a>
+                        <a href="/main.html">Main</a>
                     </li>
                     <li>
                         <a href="#services">Services</a>
@@ -40,13 +40,35 @@
             <img src="https://www.drupal.org/files/profile_default.jpg" class="img-circle">
         </div>
         <div class="col-xs-1">
-            <h2> Username </h2>
+            <h2> {{ name}} </h2>
         </div>
     </div>
 
     <div class="row">
         <div class="col-lg-10">
             <h2> History of Transactions </h2>
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Image</th>
+                    <th>ID</th>
+                </tr>
+            </thead>
+            <body>
+                {% for i in range(rows|count) %}
+                <tr {% if session['user_id']  ==  rows[i][1]|int  %} class="success" {% else %} class="info" {% endif %}>
+                    <td>{{fromNames[i]}}</td>
+                    <td>{{toNames[i]}}</td>
+                    <td> <a href="{{rows[i][2]}} "><img src="{{rows[i][2]}}" class="img-thumbnail" style="height:100px; width:100px;"> </a></td>
+                    <td>{{rows[i][3]}}</td>
+                </tr>
+                {% endfor %}
+            </body>
+            
+
+            </table>
         </div>
     </div>
 </div>
