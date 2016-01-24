@@ -1,12 +1,13 @@
-#all the imports
+#all he imports
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
 from contextlib import closing
-import requests, json
+import json
 from logging.handlers import RotatingFileHandler
 import logging
-
+#from requests_toolbelt import MultipartEncoder
+import requests
 
 # configuration
 DATABASE = '/tmp/instadough.db'
@@ -51,6 +52,25 @@ def show_index():
         return render_template('index.html')
     else:
         return render_template('main.html')
+
+
+def get_access_token_for_code():
+    app.logger.info('start of oath')
+    code = request.args.get('code', '')
+    oauthparams = {
+            'client_id': IG_CLIENT_ID,
+            'client_secret':IG_CLIENT_SECRET,
+            'grant_type':'authorization_code',
+            'redirect_uri':IG_REDIRECT_URI,
+            'code':code 
+    }
+
+    m = MultipartEncoder(oauthparams) 
+#    r = requests.post('http://httpbin.org/post', data=m,
+#                  headers={'Content-Type': m.content_type})
+    app.logger.info('sending post request')
+    r = requests.post("https://api.instagram.com/oauth/access_token", data = m, headers={'Content-Type':m.content_type})
+    return r.json()
 
 @app.route('/main.html')
 def show_mainpage():
@@ -117,8 +137,12 @@ def instagram_oauth():
             'redirect_uri':IG_REDIRECT_URI,
             'code':code 
     }
+
+    m = MultipartEncoder(oauthparams) 
+#    r = requests.post('http://httpbin.org/post', data=m,
+#                  headers={'Content-Type': m.content_type})
     app.logger.info('sending post request')
-    r = requests.post("https://api.instagram.com/oauth/access_token", data = oauthparams)
+    r = requests.post("https://api.instagram.com/oauth/access_token", data = m, headers={'Content-Type':m.content_type})
     response = r.json()
     app.logger.info(r.text)
 #    if 'access_token' in response:
