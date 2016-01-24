@@ -1,12 +1,14 @@
 #all the imports
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, \
-     abort, render_template, flash, send_from_directory
+     abort, render_template, flash, send_from_directory, make_response, \
+     send_file
 from contextlib import closing
 import requests, json
 from logging.handlers import RotatingFileHandler
 import logging
-
+from app import *
+import urllib2
 
 # configuration
 DATABASE = '/tmp/instadough.db'
@@ -23,6 +25,11 @@ app.config.from_object(__name__)
 
 app.secret_key = 'c05fe5e5ea30400fbf66f088560b259e'
 
+def query_db(query, args=(), one=False):
+    cur = g.db.execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -71,6 +78,7 @@ def show_mainpage():
         dictionary = data[i]["images"]['standard_resolution']
         dictionary["tags"] = data[i]["tags"]
         dictionary["username"] = data[i]["user"]["username"]
+        dictionary["to_id"] = query_db('select id from users where username = "{}"'.format(dictionary["username"]))
         dictionary["caption"] = data[i]["caption"]["text"]
         dictionary["id"] = data[i]["id"]
         session["images"].append(dictionary)
@@ -82,7 +90,7 @@ def show_mainpage():
     
     return render_template('main.html', images=session['images'])
 
-@app.route('/charge', methods=['POST'])
+@app.route('/charge.html', methods=['POST'])
 def charge():
     # Amount in cents
     amount = 500
@@ -99,7 +107,17 @@ def charge():
         description='Flask Charge'
     )
 
-    return render_template('charge.html', amount=amount)
+    g.db.execute('insert into history values (?, ?, ?, ?)',
+        [request.form['from_id'], request.form['to_id'], request.form['image_url'], request.form['image_id']])
+
+    f = urllib2.urlopen(str(request.form['image_url']))
+    return send_file(f, mimetype='image/jpg', as_attachment=True,\
+            attachment_filename='{}.jpg'.format(request.form['image_id']))
+    # img = f.read()
+
+    # headers = {"Content-Disposition:": "attachment; filename={}.jpg".format(request.form['image_id'])}
+
+    # return make_response((img, headers))
 
 @app.route('/search.html', methods=['POST'])
 def search():
@@ -176,12 +194,6 @@ def login():
         return render_template('login.html', failed = True)
     else:
         return render_template('login.html')
-
-def query_db(query, args=(), one=False):
-    cur = g.db.execute(query, args)
-    rv = cur.fetchall()
-    cur.close()
-    return (rv[0] if rv else None) if one else rv
 
 @app.route('/create-account.html')
 def create_account():

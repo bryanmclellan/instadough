@@ -83,17 +83,19 @@
                 <p class="description-text">$0.99</p>
 		<form action="/charge.html" method="POST">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            	<form action="" method="POST">
-  <script
-    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-    data-key="pk_test_OBYVeh77IrfyvomwDXIX4Drq"
-    data-amount="2000"
-    data-name="Demo Site"
-    data-description="2 widgets ($20.00)"
-    data-image="/128x128.png"
-    data-locale="auto">
-  </script>
-</form>
+                <input name="from_id" value={{session['user_id']}} type="hidden"/>
+                <input name="to_id" value={{image.to_id}} type="hidden"/>
+                <input name="image_id" value={{image.id}} type="hidden"/>
+                <input name="image_url" value={{image.url}} type="hidden"/>
+                  <script
+                    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                    data-key="pk_test_OBYVeh77IrfyvomwDXIX4Drq"
+                    data-amount="99"
+                    data-name="Demo Site"
+                    data-description="1 stock image"
+                    data-image="{{image.url}}"
+                    data-locale="auto">
+                  </script>
 		</form>
 		</div>
         </div>
