@@ -2,12 +2,11 @@ drop table if exists users;
 create table users (
   id integer primary key autoincrement,
   username text not null,
-  password text not null,
-  nessie_id text
+  password text not null
 );
-insert into users (username, password) values ('insta', 'dough');
-insert into users (username, password) values ('Chris', 'Fralic');
-insert into users (username, password) values ('Donald', 'Trump');
+insert into users (username, password) values ('bryanmclellan', '1');
+insert into users (username, password) values ('justin_mclellan', '1');
+insert into users (username, password) values ('gnomes4dayz', '1');
 
 
 

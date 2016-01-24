@@ -25,11 +25,14 @@ app.config.from_object(__name__)
 
 app.secret_key = 'c05fe5e5ea30400fbf66f088560b259e'
 
-def query_db(query, args=(), one=False):
+def query_db(query, args=(), one=True):
     cur = g.db.execute(query, args)
     rv = cur.fetchall()
     cur.close()
-    return (rv[0] if rv else None) if one else rv
+    if hasattr(rv, '__iter__'):
+        return rv[0] if len(rv) > 0 else ''
+    else:
+        return rv
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -204,7 +207,8 @@ def create_account():
         for row in cur.fetchall():
             return render_template('create-account.html', failed = True)
         g.db.execute('insert into users (username, password) values (?, ?)', [username, password])
-        session['user_id'] = query_db('SELECT last_insert_rowid()')
+        session['user_id'] = str(query_db('SELECT last_insert_rowid()'))
+        # return session['user_id']
         return redirect(url_for('show_mainpage'), code=302)
     else:
         return render_template('create-account.html')
@@ -221,7 +225,7 @@ def add_user():
 
 @app.route('/oauthsuccess.html')
 def instagram_oauth():
-#    return "Hello there."
+#    return "Hello there"
     app.logger.info('start of oath')
     code = request.args.get('code', '')
     oauthparams = {
