@@ -88,7 +88,9 @@ def show_mainpage():
         dictionary = data[i]["images"]['standard_resolution']
         dictionary["tags"] = data[i]["tags"]
         dictionary["username"] = data[i]["user"]["username"]
-        dictionary["to_id"] = query_db('select id from users where username = "{}"'.format(dictionary["username"]))
+        rv = g.db.execute('select id, username from users where username = "{}"'.format(dictionary["username"]))
+        for row in rv:
+            dictionary["to_id"] = str(row[0])
         dictionary["caption"] = data[i]["caption"]["text"]
         dictionary["id"] = data[i]["id"]
         session["images"].append(dictionary)
@@ -120,6 +122,8 @@ def charge():
 
     g.db.execute('insert into history values (?, ?, ?, ?)',
         [request.form['from_id'], request.form['to_id'], request.form['image_url'], request.form['image_id']])
+    g.db.commit()
+
 
     f = urllib2.urlopen(str(request.form['image_url']))
     return send_file(f, mimetype='image/jpg', as_attachment=True,\
@@ -172,6 +176,20 @@ def show_profile():
 
     return render_template('profile.html', fromNames=finalFromNames, toNames=finalToNames, rows=rv, name=username)
 
+@app.route('/dumptables')
+def dump_tables():
+    usernames = g.db.execute('select * from users')
+    history = g.db.execute('select * from history')
+    usr_str = ""
+    for username in usernames:
+        usr_str += ("".join(map(str, username)))
+        usr_str += ("<br/>")
+    history_str = ""
+    for his in history:
+        history_str += ("".join(map(str, his)))
+        history_str += ("<br/>")
+
+    return "<html><body>" + usr_str + history_str + "</body></html>"
 
 # def query_db(query, args=(), one=False):
 #     cur = g.db().execute(query, args)
@@ -215,7 +233,10 @@ def create_account():
         for row in cur.fetchall():
             return render_template('create-account.html', failed = True)
         g.db.execute('insert into users (username, password) values (?, ?)', [username, password])
-        session['user_id'] = str(query_db('SELECT last_insert_rowid()'))
+        g.db.commit()
+        rv = g.db.execute('select id, username from users where username = ?', username)
+        for row in rv:
+            session['user_id'] = str(row[0])
         # return session['user_id']
         return redirect(url_for('show_mainpage'), code=302)
     else:
