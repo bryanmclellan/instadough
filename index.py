@@ -115,6 +115,11 @@ def search():
     return render_template('main.html', images=session["search_results"])
 
 
+@app.route('/profile.html')
+def show_profile():
+    return render_template('profile.html')
+
+
 # @app.route('/add', methods=['POST'])
 # def add_user():
     # # if not session.get('logged_in'):
