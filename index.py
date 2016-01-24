@@ -1,13 +1,12 @@
-#all he imports
+#all the imports
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
 from contextlib import closing
-import json
+import requests, json
 from logging.handlers import RotatingFileHandler
 import logging
-#from requests_toolbelt import MultipartEncoder
-import requests
+
 
 # configuration
 DATABASE = '/tmp/instadough.db'
@@ -18,7 +17,6 @@ IG_REDIRECT_URI = 'http://instadough.co/main.html'
 # SECRET_KEY = 'development key'
 # USERNAME = 'admin'
 # PASSWORD = 'default'
-from flask import Flask
 app = Flask(__name__)
 app.config.from_object(__name__)
 
@@ -53,39 +51,18 @@ def show_index():
     else:
         return render_template('main.html')
 
-
-def get_access_token_for_code():
-    app.logger.info('start of oath')
-    code = request.args.get('code', '')
-    oauthparams = {
-            'client_id': IG_CLIENT_ID,
-            'client_secret':IG_CLIENT_SECRET,
-            'grant_type':'authorization_code',
-            'redirect_uri':IG_REDIRECT_URI,
-            'code':code 
-    }
-
-    m = MultipartEncoder(oauthparams) 
-#    r = requests.post('http://httpbin.org/post', data=m,
-#                  headers={'Content-Type': m.content_type})
-    app.logger.info('sending post request')
-    r = requests.post("https://api.instagram.com/oauth/access_token", data = m, headers={'Content-Type':m.content_type})
-    return r.json()
-
 @app.route('/main.html')
 def show_mainpage():
     # if not session.get('images'):
     access_token = '213665890.c05fe5e.5f748d07a787466a9044883e1176a18a'
-    access_token2 = '2117079315.c05fe5e.7d6fbe8447654b1a87de22cfacd58998'
 
     resp = requests.request('GET','https://api.instagram.com/v1/users/self/media/recent/?access_token=' + access_token)
-    respOther = requests.request('GET', 'https://api.instagram.com/v1/users/self/media/recent/?access_token=' + access_token2)
     # print(json.loads(resp.content))
     dict = json.loads(resp.content)
-    dictOther = json.loads(respOther.content)
-    print(dictOther)
+    if len(dict["data"]) == 0:
+        print("we got nothing")
 
-    data = dict["data"] + dictOther["data"]
+    data = dict["data"]
     session["images"] = []
     session["caption"] = []
     for i in xrange(0,len(data)):
@@ -130,6 +107,32 @@ def show_profile():
     # flash('New user was successfully posted')
     # return redirect(url_for('show_users'))
 
+@app.route('/login.html', methods=['GET'])
+def login():
+    #do_the_login()
+    username = request.args.get('username', '')
+    password = request.args.get('password', '')
+    if (username != '' and password != ''):
+        cur = g.db.execute('select id, username, password from users order by id desc')
+        rv = cur.fetchall()#[dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+        for row in rv:
+            if row[1] == username and row[2] == password:
+                session['user_id'] = row[0]
+                return redirect(url_for('show_mainpage'), code=302)
+        return render_template('login.html', failed = True)
+    else:
+        return render_template('login.html')
+
+@app.route('/add', methods=['POST'])
+def add_user():
+    # if not session.get('logged_in'):
+        # abort(401)
+    g.db.execute('insert into users (username, password, nessie_id) values (?, ?, ?)',
+                 [request.form['username'], request.form['password'], request.form['nessie_id']])
+    g.db.commit()
+    flash('New user was successfully posted')
+    return redirect(url_for('show_users'))
+
 @app.route('/oauthsuccess.html')
 def instagram_oauth():
 #    return "Hello there."
@@ -142,12 +145,8 @@ def instagram_oauth():
             'redirect_uri':IG_REDIRECT_URI,
             'code':code 
     }
-
-    m = MultipartEncoder(oauthparams) 
-#    r = requests.post('http://httpbin.org/post', data=m,
-#                  headers={'Content-Type': m.content_type})
     app.logger.info('sending post request')
-    r = requests.post("https://api.instagram.com/oauth/access_token", data = m, headers={'Content-Type':m.content_type})
+    r = requests.post("https://api.instagram.com/oauth/access_token", data = oauthparams)
     response = r.json()
     app.logger.info(r.text)
 #    if 'access_token' in response:
