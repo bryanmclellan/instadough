@@ -16,4 +16,4 @@ instadough_*
 /stripe/stripe-php/clover.xml
 
 # API keys for Stripe
-# /stripe/stripe-php/config.php
+/stripe/stripe-php/config.php
