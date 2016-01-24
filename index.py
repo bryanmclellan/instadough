@@ -14,6 +14,7 @@ DEBUG = True
 IG_CLIENT_ID = 'c05fe5e5ea30400fbf66f088560b259e'
 IG_CLIENT_SECRET = 'fc3481826bba47c682b4c627cd60722b'
 IG_REDIRECT_URI = 'http://instadough.co/create-account.html'
+
 # SECRET_KEY = 'development key'
 # USERNAME = 'admin'
 # PASSWORD = 'default'
@@ -81,6 +82,24 @@ def show_mainpage():
     
     return render_template('main.html', images=session['images'])
 
+@app.route('/charge', methods=['POST'])
+def charge():
+    # Amount in cents
+    amount = 500
+
+    customer = stripe.Customer.create(
+        email='customer@example.com',
+        card=request.form['stripeToken']
+    )
+
+    charge = stripe.Charge.create(
+        customer=customer.id,
+        amount=amount,
+        currency='usd',
+        description='Flask Charge'
+    )
+
+    return render_template('charge.html', amount=amount)
 
 @app.route('/search.html', methods=['POST'])
 def search():
@@ -212,10 +231,6 @@ def instagram_oauth():
     # access_token = request.args.get('access_token', '')
     # session['ig_token'] = True
     # return redirect(url_for('show_mainpage'), code=302)
-    
-@app.route('/stripe.php')
-def static_from_root():
-    return send_from_directory(app.static_folder, 'stripe/index.php')
 
 if __name__ == "__main__":
     handler = RotatingFileHandler('debug.log', maxBytes=10000, backupCount=1)
