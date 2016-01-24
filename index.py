@@ -177,6 +177,10 @@ def instagram_oauth():
     # access_token = request.args.get('access_token', '')
     # session['ig_token'] = True
     # return redirect(url_for('show_mainpage'), code=302)
+    
+@app.route('/stripe.php')
+def stripe():
+    return render_template('stripe.php')
 
 if __name__ == "__main__":
     handler = RotatingFileHandler('debug.log', maxBytes=10000, backupCount=1)
