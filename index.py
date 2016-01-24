@@ -67,17 +67,24 @@ def show_index():
 def show_mainpage():
     # if not session.get('images'):
     access_token = '213665890.c05fe5e.5f748d07a787466a9044883e1176a18a'
-
+    access_token_justin = '774251592.c05fe5e.e9ccb4581efb49bebbade115105fbd08'
+    access_token_grant = '963309449.c05fe5e.53a36e2b5b5741d79bc5b35b1ef8bd07'
     resp = requests.request('GET','https://api.instagram.com/v1/users/self/media/recent/?access_token=' + access_token)
+    resp_justin = requests.request('GET','https://api.instagram.com/v1/users/self/media/recent/?access_token=' + access_token_justin)
+    resp_grant = requests.request('GET','https://api.instagram.com/v1/users/self/media/recent/?access_token=' + access_token_grant)
     # print(json.loads(resp.content))
+
     dict = json.loads(resp.content)
+    dict_justin = json.loads(resp_justin.content)
+    dict_grant = json.loads(resp_grant.content)
     if len(dict["data"]) == 0:
         print("we got nothing")
 
-    data = dict["data"]
+    data = dict["data"] + dict_justin["data"] + dict_grant["data"]
     session["images"] = []
     session["caption"] = []
     for i in xrange(0,len(data)):
+        print(data[i]["user"])
         dictionary = data[i]["images"]['standard_resolution']
         dictionary["tags"] = data[i]["tags"]
         dictionary["username"] = data[i]["user"]["username"]
@@ -85,7 +92,8 @@ def show_mainpage():
         dictionary["caption"] = data[i]["caption"]["text"]
         dictionary["id"] = data[i]["id"]
         session["images"].append(dictionary)
-        session["caption"].append(data[i]["caption"]["text"].lower())
+        # session["caption"].append(data[i]["caption"]["text"].lower())
+        session['caption'].append(dictionary['caption'].lower())
     
     # images = [{'url':'https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e35/12424344_180566928966669_438670868_n.jpg', 'width':678, 'height': 678},
             # {'url': 'https://scontent.cdninstagram.com/hphotos-xtf1/t51.2885-15/e35/12545483_1197925680258714_777727123_n.jpg', 'width':640, 'height': 640},
