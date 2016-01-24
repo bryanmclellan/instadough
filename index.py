@@ -123,7 +123,27 @@ def login():
     else:
         return render_template('login.html')
 
-@app.route('/add', methods=['POST'])
+def query_db(query, args=(), one=False):
+    cur = g.db.execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
+
+@app.route('/create-account.html')
+def create_account():
+    username = request.args.get('username', '')
+    password = request.args.get('password', '')
+    if (username != '' and password != ''):
+        cur = g.db.execute('select id, username, password from users where username = "{}"'.format(username))
+        for row in cur.fetchall():
+            return render_template('create-account.html', failed = True)
+        g.db.execute('insert into users (username, password) values (?, ?)', [username, password])
+        session['user_id'] = query_db('SELECT last_insert_rowid()')
+        return redirect(url_for('show_mainpage'), code=302)
+    else:
+        return render_template('create-account.html')
+
+
 def add_user():
     # if not session.get('logged_in'):
         # abort(401)
